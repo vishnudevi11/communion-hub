@@ -53,7 +53,7 @@ const CreateEvent = () => {
     formData.append("address", address.trim());
     
     try {
-      await axios.post("http://localhost:3000/api/upload", formData, {
+      await axios.post("http://localhost:3002/api/upload", formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
 
