@@ -17,6 +17,8 @@ export default function Events() {
     const fetchEvents = async () => {
       try {
         const response = await fetch(`${process.env.REACT_APP_API_URL}/api/upload`);
+        console.log("Fetching from:", process.env.REACT_APP_API_URL);
+
         if (response.ok) {
           const data = await response.json();
           const validData = data.filter(event => event.eventName); // Filter out invalid entries
