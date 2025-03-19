@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { motion } from "framer-motion";
 import Swal from "sweetalert2";
-import { Calendar, MapPin, Landmark, Users } from "lucide-react";
 
 export default function Events() {
   const [showFilters, setShowFilters] = useState(false);
@@ -20,7 +19,8 @@ export default function Events() {
         const response = await fetch("http://localhost:3002/api/upload");
         if (response.ok) {
           const data = await response.json();
-          setEventsData(data);
+          const validData = data.filter(event => event.eventName); // Filter out invalid entries
+          setEventsData(validData);
         } else {
           console.error("Failed to fetch events");
         }
@@ -28,7 +28,7 @@ export default function Events() {
         console.error("Error fetching events:", error);
       }
     };
-
+    
     fetchEvents();
   }, []);
 
@@ -154,33 +154,24 @@ export default function Events() {
       </div>
 
       {/* Events List */}
-<div className="max-w-7xl mx-auto mt-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-        {filteredEvents.map(event => (
-          <motion.div 
-            key={event._id} 
-            className="bg-white shadow-md rounded-lg p-4 cursor-pointer"
-            whileHover={{ scale: 1.05 }}
-          >
-            <div className="p-4">
-              <h3 className="text-xl font-bold capitalize">{event.eventName}</h3>
-              <p className="text-gray-600 flex items-center gap-2">
-                <Calendar size={18} /> {event.eventDate}
-              </p>
-              <p className="text-gray-600 flex items-center gap-2">
-                <MapPin size={18} /> {event.address}, {event.city}
-              </p>
-              <p className="text-gray-600 flex items-center gap-2">
-                <Landmark size={18} /> {event.landmark}
-              </p>
-              <p className="text-gray-600 flex items-center gap-2">
-                <Users size={18} /> {event.religious}
-              </p>
-              <button className="mt-3 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600" onClick={() => setSelectedEvent(event)}>
-                Explore
-              </button>
-            </div>
-          </motion.div>
-        ))}
+      <div className="max-w-7xl mx-auto mt-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+      {filteredEvents.map(event => (
+  <motion.div key={event._id || Math.random()} className="bg-white shadow-md rounded-lg p-4 cursor-pointer" whileHover={{ scale: 1.05 }}>
+    <div className="p-4">
+      <h3 className="text-xl font-bold">
+        {event.eventName ? event.eventName.charAt(0).toUpperCase() + event.eventName.slice(1) : "Unnamed Event"}
+      </h3>
+      <p className="text-gray-600"><strong>Date:</strong> {event.eventDate || "Unknown Date"}</p>
+      <p className="text-gray-600"><strong>Address:</strong> {event.address || "No Address"}, {event.city || "Unknown City"}</p>
+      <p className="text-gray-600"><strong>Landmark:</strong> {event.landmark || "No Landmark"}</p>
+      <p className="text-gray-600"><strong>Religion:</strong> {event.religious || "Not Specified"}</p>
+      <button className="mt-3 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600" onClick={() => setSelectedEvent(event)}>
+        Explore
+      </button>
+    </div>
+  </motion.div>
+))}
+
       </div>
 
       {/* Event Details Modal */}
@@ -191,29 +182,14 @@ export default function Events() {
         ✖
       </button>
       <h2 className="text-2xl font-bold mt-4">
-  {selectedEvent.eventName.charAt(0).toUpperCase() + selectedEvent.eventName.slice(1)}
+  {selectedEvent?.eventName ? selectedEvent.eventName.charAt(0).toUpperCase() + selectedEvent.eventName.slice(1) : "Unnamed Event"}
 </h2>
 
-<p className="text-gray-600 flex items-center gap-2">
-  <Calendar size={18} /> {selectedEvent.eventDate}
-</p>
-
-<p className="text-gray-600 flex items-center gap-2">
-  <MapPin size={18} />{selectedEvent.address}, {selectedEvent.city}
-</p>
-
-<p className="text-gray-600 flex items-center gap-2">
-  <Landmark size={18} />{selectedEvent.landmark}
-</p>
-
-<p className="text-gray-600 flex items-center gap-2">
-  <Users size={18} />{selectedEvent.religious}
-</p>
-
-<p className="mt-2 text-gray-700">
-  <strong>Description:</strong> {selectedEvent.description}
-</p>
-
+      <p className="text-gray-600"><strong>Date:</strong> {selectedEvent.eventDate}</p>
+      <p className="text-gray-600"><strong>Address:</strong> {selectedEvent.address}, {selectedEvent.city}</p>
+      <p className="text-gray-600"><strong>Landmark:</strong> {selectedEvent.landmark}</p>
+      <p className="text-gray-600"><strong>Religion:</strong> {selectedEvent.religious}</p>
+      <p className="mt-2 text-gray-700"><strong>Description:</strong> {selectedEvent.description}</p>
     </div>
   </div>
 )}
