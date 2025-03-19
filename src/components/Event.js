@@ -16,7 +16,7 @@ export default function Events() {
   useEffect(() => {
     const fetchEvents = async () => {
       try {
-        const response = await fetch("http://localhost:3002/api/upload");
+        const response = await fetch(`${process.env.REACT_APP_API_URL}/api/upload`);
         if (response.ok) {
           const data = await response.json();
           const validData = data.filter(event => event.eventName); // Filter out invalid entries
