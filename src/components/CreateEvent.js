@@ -54,7 +54,7 @@ const CreateEvent = () => {
     
     try {
       await axios.post("http://localhost:3002/api/upload", formData, {
-        headers: { "Content-Type": "multipart/form-data" },
+        headers: {"Content-Type": "application/json" },
       });
 
       Swal.fire({
